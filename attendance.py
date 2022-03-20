@@ -1,4 +1,5 @@
 from importlib.resources import path
+from time import time
 import cv2
 import numpy as np
 import face_recognition
@@ -32,6 +33,21 @@ encodeListKnown=faceEncodings(images)
 print("all encoding complted")
 
 
+def Attendance(nm):
+    with open('attendance.csv','r+') as f:
+        myDataList=f.readlines()
+        NameList=[]
+        for line in myDataList:
+            entry=line.split(',')
+            NameList.append(entry[0])
+            print(NameList)
+        if nm not in NameList:
+            time_now=datetime.now()
+            tStr=time_now.strftime('%H:%M:%S')
+            dStr=time_now.strftime('%d/%m/%Y')
+            f.writelines(f'{nm},{tStr},{dStr},')
+
+
 
 cap=cv2.VideoCapture(0) #laptop camera =0 external camera =1
 
@@ -54,6 +70,7 @@ while True:
             cv2.rectangle(frame,(x1,y1),(x2,y2),(0,255,0),2)
             cv2.rectangle(frame,(x1,y2-35),(x2,y2),(0,255,0),cv2.FILLED)
             cv2.putText(frame,name,(x1+6,y2-6),cv2.FONT_HERSHEY_COMPLEX,1,(0,0,255),2)
+            Attendance(name)
     cv2.imshow("Camera",frame)
     if cv2.waitKey(10)==13:
         break
